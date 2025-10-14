@@ -3,8 +3,9 @@ from abc import ABC, abstractmethod
 from train.utils import model_size_b, MiB
 from tqdm import tqdm
 import torch.nn as nn
-from data.sampleable import GaussianConditionalProbabilityPath
+from data.sampleable import GaussianConditionalProbabilityPath, IsotropicGaussian, GaussianEqM
 from data.simulator import ConditionalVectorField
+from model.mnist_unet import MNISTUNet
 
 class Trainer(ABC):
     def __init__(self, model: nn.Module):
@@ -27,22 +28,24 @@ class Trainer(ABC):
         self.model.to(device)
         opt = self.get_optimizer(lr)
         self.model.train()
-
+        losses = []
         # Train loop
         pbar = tqdm(enumerate(range(num_epochs)))
         for idx, epoch in pbar:
             opt.zero_grad()
             loss = self.get_train_loss(**kwargs)
+            losses.append(loss.detach().cpu().item())
             loss.backward()
             opt.step()
             pbar.set_description(f'Epoch {idx}, loss: {loss.item():.3f}')
 
         # Finish
         self.model.eval()
+        return losses
 
 
 class CFGTrainer(Trainer):
-    def __init__(self, path: GaussianConditionalProbabilityPath, model: ConditionalVectorField, eta: float, **kwargs):
+    def __init__(self, path: GaussianConditionalProbabilityPath, model: MNISTUNet, eta: float, **kwargs):
         assert eta > 0 and eta < 1
         super().__init__(model, **kwargs)
         self.eta = eta
@@ -69,3 +72,26 @@ class CFGTrainer(Trainer):
     
     
 class EqMTrainer(Trainer):
+    def __init__(self, data_sampler: GaussianEqM, model: ConditionalVectorField, device: torch.device, **kwargs):
+        super().__init__(model, **kwargs)
+        self.data_sampler = data_sampler
+        self.model = model
+        self.device = device
+        self.eta = 0.2
+
+    def get_train_loss(self, batch_size: int) -> torch.Tensor:
+        # Step 1: Sample gamma
+        gamma = torch.rand(batch_size, 1, 1, 1).to(self.device)
+        xg, target, y = self.data_sampler.sample_conditional_path(gamma)
+        
+        # Step 2: Set each label to 10 (i.e., null) with probability eta
+        mask = torch.rand(batch_size) < self.eta
+        mask.to(xg)
+        y[mask] = 10.0
+        
+        # Step 3: Predict
+        pred = self.model(xg, torch.zeros_like(gamma), y)
+        
+        # Step 4: Output loss
+        loss = torch.nn.functional.mse_loss(pred, target)
+        return loss

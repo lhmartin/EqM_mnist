@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional, List, Tuple
+from typing import Optional, List, Tuple, Callable
 import torch
 import torch.nn as nn
 import torch.distributions as D
@@ -211,3 +211,21 @@ class MNISTSampler(nn.Module, Sampleable):
         return samples, labels
 
 
+class GaussianEqM(nn.Module):
+    def __init__(self, p_data: Sampleable, p_simple_shape: List[int], grad_magnitude_func: Callable, grad_multiplier: float = 4.0):
+        super().__init__()
+        self.grad_magnitude = grad_magnitude_func
+        self.p_data = p_data
+        self.grad_multiplier = grad_multiplier
+        self.p_simple = IsotropicGaussian(shape = p_simple_shape, std = 1.0)
+
+    def sample_conditional_path(self, gamma: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+        
+        # x in Algorithm 1
+        x, y = self.p_data.sample(gamma.shape[0])
+        eps, _ = self.p_simple.sample(gamma.shape[0])
+        
+        xg = (1.0 - gamma) * eps + gamma * x
+        target = (eps - x) * self.grad_magnitude(gamma) * self.grad_multiplier
+        
+        return xg, target, y
