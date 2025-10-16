@@ -220,12 +220,16 @@ class GaussianEqM(nn.Module):
         self.p_simple = IsotropicGaussian(shape = p_simple_shape, std = 1.0)
 
     def sample_conditional_path(self, gamma: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+        """
         
-        # x in Algorithm 1
+        """
         x, y = self.p_data.sample(gamma.shape[0])
-        eps, _ = self.p_simple.sample(gamma.shape[0])
-        
-        xg = (1.0 - gamma) * eps + gamma * x
-        target = (eps - x) * self.grad_magnitude(gamma) * self.grad_multiplier
+        xg, target = self._apply_noise(x, gamma)
         
         return xg, target, y
+    
+    def _apply_noise(self, x: torch.Tensor, gamma: torch.Tensor) -> torch.Tensor:
+        eps, _ = self.p_simple.sample(gamma.shape[0])
+        xg = (1.0 - gamma) * eps + gamma * x
+        target = (eps - x) * self.grad_magnitude(gamma) * self.grad_multiplier
+        return xg, target
