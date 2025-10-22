@@ -1,0 +1,10 @@
+experiment_name: "eqm_base"
+num_epochs:      1000
+lr:              1e-3
+batch_size:      250
+eta:             0.2
+c_function:      "linear"
+c_alpha:         0.8
+c_beta:          0.2
+grad_multiplier: 4.0
+save_dir:        "./results/eqm/"

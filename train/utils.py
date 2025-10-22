@@ -16,3 +16,4 @@ def model_size_b(model: nn.Module) -> int:
     for buf in model.buffers():
         size += buf.nelement() * buf.element_size()
     return size
+

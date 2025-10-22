@@ -1,5 +1,5 @@
 [project]
-name = "EqM_mnist"
+name = "eqm_mnist"
 version = "0.1.0"
 description = ""
 authors = [
@@ -17,7 +17,9 @@ dependencies = [
     "scikit-learn (>=1.7.1,<2.0.0)",
     "ffmpeg (>=1.4,<2.0)",
     "celluloid (>=0.2.0,<0.3.0)",
-    "torchvision (>=0.22.1,<0.23.0)"
+    "torchvision (>=0.22.1,<0.23.0)",
+    "pydantic (>=2.12.3,<3.0.0)",
+    "pyyaml (>=6.0.3,<7.0.0)"
 ]
 
 

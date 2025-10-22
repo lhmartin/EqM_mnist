@@ -72,26 +72,32 @@ class CFGTrainer(Trainer):
     
     
 class EqMTrainer(Trainer):
-    def __init__(self, data_sampler: GaussianEqM, model: ConditionalVectorField, device: torch.device, **kwargs):
+    def __init__(self, 
+                 data_sampler: GaussianEqM, 
+                 model: ConditionalVectorField, 
+                 device: torch.device, 
+                 eta: float = 0.2,
+                 **kwargs):
+        assert eta > 0 and eta < 1
         super().__init__(model, **kwargs)
         self.data_sampler = data_sampler
         self.model = model
         self.device = device
-        self.eta = 0.2
+        self.eta = eta
 
     def get_train_loss(self, batch_size: int) -> torch.Tensor:
         # Step 1: Sample gamma
         gamma = torch.rand(batch_size, 1, 1, 1).to(self.device)
         xg, target, y = self.data_sampler.sample_conditional_path(gamma)
-        
+
         # Step 2: Set each label to 10 (i.e., null) with probability eta
         mask = torch.rand(batch_size) < self.eta
         mask.to(xg)
         y[mask] = 10.0
-        
+
         # Step 3: Predict
         pred = self.model(xg, torch.zeros_like(gamma), y)
-        
+
         # Step 4: Output loss
         loss = torch.nn.functional.mse_loss(pred, target)
         return loss
