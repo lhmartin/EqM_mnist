@@ -1,4 +1,4 @@
-experiment_name: "eqm_base"
+experiment_name: "base_grad_1"
 num_epochs:      1000
 lr:              1e-3
 batch_size:      250

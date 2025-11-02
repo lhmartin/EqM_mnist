@@ -1,0 +1,17 @@
+batch_size: 250
+c_alpha: 0.8
+c_beta: 0.2
+c_function: linear
+channels:
+- 32
+- 64
+- 128
+eta: 0.2
+experiment_name: base_grad_2
+grad_multiplier: 2.0
+lr: 0.001
+num_epochs: 1000
+num_residual_layers: 2
+save_dir: ./results/eqm/
+t_embed_dim: 40
+y_embed_dim: 40

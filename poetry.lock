@@ -1879,6 +1879,28 @@ files = [
 six = ">=1.5"
 
 [[package]]
+name = "pytorch-fid"
+version = "0.3.0"
+description = "Package for calculating Frechet Inception Distance (FID) using PyTorch"
+optional = false
+python-versions = ">=3.5"
+groups = ["main"]
+files = [
+    {file = "pytorch-fid-0.3.0.tar.gz", hash = "sha256:1c80d112c9cf5ebcbcc428a0b7ea615c302805ad6780ec29e8e2955ba31571c8"},
+    {file = "pytorch_fid-0.3.0-py3-none-any.whl", hash = "sha256:0e1d4fe66441a8dff2a2aca31394e9389fb197dfeff046f2f971f271d4137767"},
+]
+
+[package.dependencies]
+numpy = "*"
+pillow = "*"
+scipy = "*"
+torch = ">=1.0.1"
+torchvision = ">=0.2.2"
+
+[package.extras]
+dev = ["flake8", "flake8-bugbear", "flake8-isort", "nox"]
+
+[[package]]
 name = "pytz"
 version = "2025.2"
 description = "World timezone definitions, modern and historical"
@@ -2562,4 +2584,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12"
-content-hash = "af7fda7838b5d0ab68c4db5156ef22a2e0c400257c7047f3bfdd6b7e72430ab2"
+content-hash = "3002d17251708f65419e037ea02f1476c2cdeb6338f44e160d85794b7c021210"

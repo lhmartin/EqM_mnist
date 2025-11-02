@@ -19,7 +19,8 @@ dependencies = [
     "celluloid (>=0.2.0,<0.3.0)",
     "torchvision (>=0.22.1,<0.23.0)",
     "pydantic (>=2.12.3,<3.0.0)",
-    "pyyaml (>=6.0.3,<7.0.0)"
+    "pyyaml (>=6.0.3,<7.0.0)",
+    "pytorch-fid (>=0.3.0,<0.4.0)"
 ]
 
 
