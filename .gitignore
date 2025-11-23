@@ -209,3 +209,4 @@ __marimo__/
 # data files
 data/MNIST/
 eqm_mnist/data/MNIST/*
+results/eqm/*

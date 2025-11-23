@@ -70,7 +70,7 @@ class ExperimentRunner:
                                     lr=self.config.lr, 
                                     batch_size=self.config.batch_size)
         
-        self.run_sampling()
+        samples, intermediate_steps = self.run_sampling(save_dir=self.config.save_dir)
         
         # save the samples
         os.makedirs(save_dir, exist_ok=True)
@@ -130,10 +130,11 @@ class ExperimentRunner:
                                                              target_y=target_y,
                                                              verbose=True)
                 # save the samples
-                inference_settings_str = "_".join([f"{k}={v}" for k, v in inference_settings.items()])s
+                inference_settings_str = "_".join([f"{k}={v}" for k, v in inference_settings.items()])
                 os.makedirs(save_dir, exist_ok=True)
                 plt.imsave(os.path.join(save_dir, f"samples_{target_y}_{inference_settings_str}.png"), samples.detach().cpu().numpy())
                 np.save(os.path.join(save_dir, f"samples_{target_y}_{inference_settings_str}.npy"), samples.detach().cpu().numpy())
+                intermediate_steps = torch.stack(intermediate_steps)
                 np.save(os.path.join(save_dir, f"intermediate_steps_{target_y}_{inference_settings_str}.npy"), intermediate_steps.detach().cpu().numpy())
                 print(f"Samples saved to {os.path.join(save_dir, f'samples_{target_y}_{inference_settings_str}.npy')}")
                 print(f"Intermediate steps saved to {os.path.join(save_dir, f'intermediate_steps_{target_y}_{inference_settings_str}.npy')}")

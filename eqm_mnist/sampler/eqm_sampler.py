@@ -40,6 +40,7 @@ class EqMSampler:
         unguided_grad = self.model(x, t, torch.ones_like(y) * 10)
         return (1 - guidance_scale) * unguided_grad + guidance_scale * guided_grad
     
+    @torch.no_grad()
     def sample(self, initial_samples: torch.Tensor, step_size: float = 0.01, 
                nag_factor: float = 0.4, g_threshold: float = 20, 
                max_steps: int = 50, target_y: int = 1, 
